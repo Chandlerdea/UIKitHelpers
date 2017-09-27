@@ -11,13 +11,13 @@ extension NSLayoutXAxisAnchor {
 
     public func constraint(equalTo anchor: NSLayoutXAxisAnchor, constant: CGFloat, priority: CGFloat) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
-        constraint.priority = UILayoutPriority(priority)
+        constraint.priority = UILayoutPriority(Float(priority))
         return constraint
     }
 
     public func constraint(equalTo anchor: NSLayoutXAxisAnchor, priority: CGFloat) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor)
-        constraint.priority = UILayoutPriority(priority)
+        constraint.priority = UILayoutPriority(Float(priority))
         return constraint
     }
 }
@@ -26,13 +26,13 @@ extension NSLayoutYAxisAnchor {
 
     public func constraint(equalTo anchor: NSLayoutYAxisAnchor, constant: CGFloat, priority: CGFloat) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
-        constraint.priority = UILayoutPriority(priority)
+        constraint.priority = UILayoutPriority(Float(priority))
         return constraint
     }
 
     public func constraint(equalTo anchor: NSLayoutYAxisAnchor, priority: CGFloat) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor)
-        constraint.priority = UILayoutPriority(priority)
+        constraint.priority = UILayoutPriority(Float(priority))
         return constraint
     }
 }
@@ -41,13 +41,13 @@ extension NSLayoutDimension {
 
     public func constraint(equalTo anchor: NSLayoutDimension, constant: CGFloat, priority: CGFloat) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
-        constraint.priority = UILayoutPriority(priority)
+        constraint.priority = UILayoutPriority(Float(priority))
         return constraint
     }
 
     public func constraint(equalTo anchor: NSLayoutDimension, priority: CGFloat) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor)
-        constraint.priority = UILayoutPriority(priority)
+        constraint.priority = UILayoutPriority(Float(priority))
         return constraint
     }
 }
@@ -90,22 +90,22 @@ extension UIView {
             bottomConstraint.constant = -padding.bottom
         }
         if let priorities = priorities {
-            leftConstraint.priority = UILayoutPriority(priorities.left)
-            rightConstraint.priority = UILayoutPriority(priorities.right)
-            topConstraint.priority = UILayoutPriority(priorities.top)
-            bottomConstraint.priority = UILayoutPriority(priorities.bottom)
+            leftConstraint.priority = UILayoutPriority(Float(priorities.left))
+            rightConstraint.priority = UILayoutPriority(Float(priorities.right))
+            topConstraint.priority = UILayoutPriority(Float(priorities.top))
+            bottomConstraint.priority = UILayoutPriority(Float(priorities.bottom))
         }
         NSLayoutConstraint.activate([leftConstraint, rightConstraint, topConstraint, bottomConstraint])
     }
 
-    @discardableResult func addSeparator(with origin: CGPoint? = nil, color: Theme.Colors! = .lightGray1) -> CALayer {
+    @discardableResult func addSeparator(with origin: CGPoint? = nil, color: UIColor! = .lightGray) -> CALayer {
         let layer = CAShapeLayer()
         var origin: CGPoint! = origin
         if origin == nil {
             origin = CGPoint(x: 0.0, y: self.bounds.height - type(of: self).defaultSeparatorHeight)
         }
         layer.frame = CGRect(origin: origin, size: CGSize(width: self.bounds.width, height: type(of: self).defaultSeparatorHeight))
-        layer.backgroundColor = color.colorValue.cgColor
+        layer.backgroundColor = color.cgColor
         self.layer.addSublayer(layer)
         return layer
     }
@@ -156,6 +156,12 @@ extension UIView {
     }
 
     func firstSubview<T>(ofType type: T.Type) -> T? where T: UIView {
-        return self.subviews.first(where: { type(of: $0) == type }) as? T
+        for view in self.subviews {
+            guard let subviewType: T = view as? T else {
+                continue
+            }
+            return subviewType
+        }
+        return .none
     }
 }
