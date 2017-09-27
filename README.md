@@ -54,7 +54,7 @@ There is also a protocol `ReusableViewType` which looks like this:
 
 `UITableViewCell`, `UICollectionViewCell`, `UITableViewHeaderFooterView`, and `UICollectionReusableView` all conform to this protocol. I mostly use this with registering cells, so I can register cells with string representations of their name, like this:
 
-    tableView.register(SomeCell.self, forCellReuseIdentifier: SomeCell.reuseId)
+    tableView.register(SomeCell.self, forCellReuseIdentifier: SomeCell.reuseIdentifier)
 
 
 The extension on `UIView` has some convenient methods for common `UIKit` usecases. For example:
