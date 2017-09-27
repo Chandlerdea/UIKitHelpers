@@ -1,7 +1,63 @@
-# UIView-helpers
+# UIViewHelpers
 
-This is an extension on UIView that makes my day easier. The extension includes:
+This framework is just an extension on UIView that makes my day easier. 
 
+## Requirements
+
+This is written in Swift 4, works with macOS, iOS, watchOS, and tvOS.
+
+## Installation
+
+You can install this library with Carthage, or Swift's package manager
+
+### Carthage
+
+Add this line to you `Cartfile`:
+
+    github "Chandlerdea/NetworkingController"
+    
+Run `carthage update` and then add the created framework in `$(SRCROOT)/Carthage/build/iOS` to the Embedded Binaries section of you project.
+
+### Cocopods
+
+I'm having trouble linting the cocoapod, so cocoapods support isn't available just yet. I'll be adding it as soon as I figure out the issue.
+
+### Swift Package Manager
+
+In your Packages.swift file, add this code
+
+    import PackageDescription
+
+    let package = Package(
+        url: "https://github.com/Chandlerdea/UIViewHelpers/UIViewHelpers.swift"
+        majorVersion: 1
+    )
+    
+
+## How to use
+
+There is also a protocol `ReusableViewType` which looks like this:
+
+    public protocol ReusableViewType {
+        static var reuseIdentifier: String { get }
+    }
+    extension ReusableViewType where Self: NSObject {
+	    static public var reuseIdentifier: String {
+	        let classString = NSStringFromClass(self)
+	        if classString.contains(".") {
+	            return classString.components(separatedBy: ".")[1]
+	        } else {
+	            return classString
+	        }
+	    }
+	}
+
+`UITableViewCell`, `UICollectionViewCell`, `UITableViewHeaderFooterView`, and `UICollectionReusableView` all conform to this protocol. I mostly use this with registering cells, so I can register cells with string representations of their name, like this:
+
+    tableView.register(SomeCell.self, forCellReuseIdentifier: SomeCell.reuseId)
+
+
+The extension on `UIView` has some convenient methods for common `UIKit` usecases. For example:
 * The ability to create constraints with a priority, without having to create and modify the constraint, in a familiar API that looks like the existing auto layout api. Here are a few examples: 
   * `constraint(equalTo anchor: NSLayoutDimension, constant: CGFloat, priority: CGFloat) -> NSLayoutConstraint`
   * `constraint(equalTo anchor: NSLayoutXAxisAnchor, constant: CGFloat, priority: CGFloat) -> NSLayoutConstraint`
