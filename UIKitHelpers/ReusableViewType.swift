@@ -22,7 +22,7 @@ extension ReusableViewType where Self: NSObject {
     }
 }
 
-extension UITableViewHeaderFooterView: ReusableViewType {}
-extension UITableViewCell: ReusableViewType {}
-extension UICollectionReusableView: ReusableViewType {}
-extension UIViewController: ReusableViewType {}
+public extension UITableViewHeaderFooterView: ReusableViewType {}
+public extension UITableViewCell: ReusableViewType {}
+public extension UICollectionReusableView: ReusableViewType {}
+public extension UIViewController: ReusableViewType {}

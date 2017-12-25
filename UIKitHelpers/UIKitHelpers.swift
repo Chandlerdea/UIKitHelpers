@@ -227,4 +227,195 @@ extension UILayoutPriority {
     }
 }
 
+extension UICollectionView {
+    
+    public func registerCellClasses<T>(_ classes: [T.Type]) where T: UICollectionViewCell {
+        classes.forEach {
+            let identifier: String = $0.reuseIdentifier
+            self.register($0.self, forCellWithReuseIdentifier: identifier)
+        }
+    }
+    
+    public func registerCellNibs<T>(_ classes: [T.Type]) where T: UICollectionViewCell {
+        classes.forEach {
+            let name: String = $0.reuseIdentifier
+            let nib: UINib = UINib(nibName: name, bundle: Bundle(for: $0))
+            self.register(nib, forCellWithReuseIdentifier: name)
+        }
+    }
+    
+    public func registerReusableHeaderViewClasses<T>(_ classes: [T.Type]) where T: UICollectionReusableView {
+        classes.forEach {
+            let identifier: String = $0.reuseIdentifier
+            self.register($0.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: identifier)
+        }
+    }
+    
+    public func registerReusableFooterViewClasses<T>(_ classes: [T.Type]) where T: UICollectionReusableView {
+        classes.forEach {
+            let identifier: String = $0.reuseIdentifier
+            self.register($0.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: identifier)
+        }
+    }
+    
+    public func scrollToLastItem(in section: Int, animated: Bool? = false) {
+        let rowCount: Int = self.numberOfItems(inSection: section)
+        guard rowCount > 0 else { return }
+        let path: IndexPath = IndexPath(item: rowCount - 1, section: section)
+        self.scrollToItem(at: path, at: .bottom, animated: animated!)
+    }
+    
+    public func scrollToLastItem(animated: Bool? = true) {
+        let sectionCount: Int = self.numberOfSections
+        self.scrollToLastItem(in: sectionCount - 1)
+    }
+    
+}
+
+extension UITableView {
+    
+    public func registerCellClasses<T: UITableViewCell>(_ classes: [T.Type]) {
+        classes.forEach {
+            let identifier = $0.reuseIdentifier
+            self.register($0.self, forCellReuseIdentifier: identifier)
+        }
+    }
+    
+    public func registerCellNibs<T: UITableViewCell>(_ classes: [T.Type]) {
+        classes.forEach {
+            let name = $0.reuseIdentifier
+            let nib = UINib(nibName: name, bundle: Bundle(for: $0))
+            self.register(nib, forCellReuseIdentifier: name)
+        }
+    }
+    
+    public func registerHeaderFooterNibs<T: UITableViewHeaderFooterView>(_ classes: [T.Type]) {
+        classes.forEach {
+            let bundle: Bundle = Bundle(for: $0)
+            let nib: UINib = UINib(nibName: $0.reuseIdentifier, bundle: bundle)
+            self.register(nib, forHeaderFooterViewReuseIdentifier: $0.reuseIdentifier)
+        }
+    }
+    
+    public func registerHeaderFooterClasses<T: UITableViewHeaderFooterView>(_ classes: [T.Type]) {
+        classes.forEach {
+            self.register($0, forHeaderFooterViewReuseIdentifier: $0.reuseIdentifier)
+        }
+    }
+    
+    public func scrollToLastRow(in section: Int, animated: Bool? = false) {
+        let rowCount: Int = self.numberOfRows(inSection: section)
+        guard rowCount > 0 else { return }
+        let path: IndexPath = IndexPath(item: rowCount - 1, section: section)
+        self.scrollToRow(at: path, at: .bottom, animated: animated!)
+    }
+    
+    public func scrollToLastRow(animated: Bool? = true) {
+        let sectionCount: Int = self.numberOfSections
+        self.scrollToLastRow(in: sectionCount - 1)
+    }
+}
+
+extension UIColor {
+    
+    private static let denominator: CGFloat = 255.0
+    
+    public static let defaultViewTintColor: UIColor = UIColor.red(0, green: 122, blue: 255)
+    
+    public class func red(_ red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat = 1.0) -> UIColor {
+        let redValue: CGFloat = red / self.denominator
+        let greenValue: CGFloat = green / self.denominator
+        let blueValue: CGFloat = blue / self.denominator
+        if #available(iOS 10.0, *) {
+            return self.init(displayP3Red: redValue, green: greenValue, blue: blueValue, alpha: alpha)
+        } else {
+            return self.init(red: redValue, green: greenValue, blue: blueValue, alpha: alpha)
+        }
+    }
+    
+    public class func rgb(_ value: CGFloat, alpha: CGFloat = 1.0) -> UIColor {
+        return self.red(value, green: value, blue: value, alpha: alpha)
+    }
+}
+
+extension UITextField {
+    
+    public func setPlaceholder(_ text: String, color: UIColor) {
+        let attrs: [NSAttributedStringKey: Any] = [
+            .foregroundColor: color
+        ]
+        self.attributedPlaceholder = NSAttributedString(string: text, attributes: attrs)
+    }
+    
+}
+
+extension UIViewController {
+    
+    public class func loadFromNib<T>() -> T where T: UIViewController {
+        return T(nibName: T.reuseIdentifier, bundle: .none)
+    }
+    
+    public func addChild(viewController: UIViewController, viewFrame: CGRect? = .none) {
+        viewController.willMove(toParentViewController: self)
+        self.addChildViewController(viewController)
+        if let newFrame = viewFrame {
+            viewController.view.frame = newFrame
+        } else {
+            viewController.view.frame = self.view.bounds
+        }
+        self.view.addSubview(viewController.view)
+        viewController.didMove(toParentViewController: self)
+    }
+    
+    public func addChild(viewController: UIViewController, constraints: (UIView) -> [NSLayoutConstraint]) {
+        viewController.willMove(toParentViewController: self)
+        self.addChildViewController(viewController)
+        self.view.addSubview(viewController.view)
+        viewController.view.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate(constraints(viewController.view))
+        viewController.didMove(toParentViewController: self)
+    }
+    
+    public func removeChild(viewController: UIViewController) {
+        viewController.willMove(toParentViewController: .none)
+        viewController.view.removeFromSuperview()
+        viewController.removeFromParentViewController()
+    }
+    
+    public func childOfType<T: UIViewController>(_ viewControllerType: T.Type) -> T? {
+        let result = self.childViewControllers.filter({ child in
+            switch child {
+            case let navController as UINavigationController where viewControllerType is UINavigationController.Type == false:
+                return navController.viewControllers.filter({ $0 is T }).count > 0
+            case _ as T:
+                return true
+            default:
+                return false
+            }
+        }).first
+        if result is UINavigationController, viewControllerType is UINavigationController.Type == false {
+            return (result as! UINavigationController).viewControllers.filter({ $0 is T }).first as? T
+        } else {
+            return result as? T
+        }
+    }
+}
+
+extension UIStackView {
+    
+    public func removeAllArrangedSubviews() {
+        for view in self.arrangedSubviews {
+            self.removeArrangedSubview(view)
+            view.removeFromSuperview()
+        }
+    }
+}
+
+extension UISearchBar {
+    
+    public var textField: UITextField? {
+        return self.value(forKey: "searchField") as? UITextField
+    }
+}
+
 
