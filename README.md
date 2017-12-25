@@ -1,4 +1,4 @@
-# UIViewHelpers
+# UIKitHelpers
 
 This framework is just an extension on UIView that makes my day easier. 
 
@@ -14,7 +14,7 @@ You can install this library with Carthage, or Swift's package manager
 
 Add this line to you `Cartfile`:
 
-    github "Chandlerdea/NetworkingController"
+    github "Chandlerdea/UIKitHelpers"
     
 Run `carthage update` and then add the created framework in `$(SRCROOT)/Carthage/build/iOS` to the Embedded Binaries section of you project.
 
@@ -29,7 +29,7 @@ In your Packages.swift file, add this code
     import PackageDescription
 
     let package = Package(
-        url: "https://github.com/Chandlerdea/UIViewHelpers/UIViewHelpers.swift"
+        url: "https://github.com/Chandlerdea/UIKitHelpers/UIKitHelpers.swift"
         majorVersion: 1
     )
     
