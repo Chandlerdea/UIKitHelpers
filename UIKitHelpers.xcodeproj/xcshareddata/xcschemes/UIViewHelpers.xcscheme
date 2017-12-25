@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "36E2B5C71F7B3D9900F090AD"
-               BuildableName = "UIViewHelpers.framework"
-               BlueprintName = "UIViewHelpers"
-               ReferencedContainer = "container:UIViewHelpers.xcodeproj">
+               BuildableName = "UIKitHelpers.framework"
+               BlueprintName = "UIKitHelpers"
+               ReferencedContainer = "container:UIKitHelpers.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -48,9 +48,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "36E2B5C71F7B3D9900F090AD"
-            BuildableName = "UIViewHelpers.framework"
-            BlueprintName = "UIViewHelpers"
-            ReferencedContainer = "container:UIViewHelpers.xcodeproj">
+            BuildableName = "UIKitHelpers.framework"
+            BlueprintName = "UIKitHelpers"
+            ReferencedContainer = "container:UIKitHelpers.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -66,9 +66,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "36E2B5C71F7B3D9900F090AD"
-            BuildableName = "UIViewHelpers.framework"
-            BlueprintName = "UIViewHelpers"
-            ReferencedContainer = "container:UIViewHelpers.xcodeproj">
+            BuildableName = "UIKitHelpers.framework"
+            BlueprintName = "UIKitHelpers"
+            ReferencedContainer = "container:UIKitHelpers.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
