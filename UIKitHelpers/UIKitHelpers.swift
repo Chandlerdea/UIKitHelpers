@@ -418,4 +418,29 @@ extension UISearchBar {
     }
 }
 
+extension UINavigationController {
+    
+    public static func rootViewController(_ rootViewController: UIViewController, prefersLargeTitles: Bool = false) -> UINavigationController {
+        let navigationController: UINavigationController = UINavigationController(rootViewController: rootViewController)
+        if #available(iOS 11.0, *) {
+            navigationController.navigationBar.prefersLargeTitles = true
+        }
+        return navigationController
+    }
+}
+
+extension UIEdgeInsets {
+    
+    static func withSpacing(_ spacing: CGFloat) -> UIEdgeInsets {
+        return self.init(top: spacing, left: spacing, bottom: spacing, right: spacing)
+    }
+    
+    public var size: CGSize {
+        return CGSize(
+            width: self.left + self.right,
+            height: self.top + self.bottom
+        )
+    }
+}
+
 
