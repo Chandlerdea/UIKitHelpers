@@ -20,6 +20,18 @@ extension NSLayoutXAxisAnchor {
         constraint.priority = priority
         return constraint
     }
+    
+    public func constraint(greaterThanOrEqualTo anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0.0, priority: UILayoutPriority) -> NSLayoutConstraint {
+        let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
+        constraint.priority = priority
+        return constraint
+    }
+    
+    public func constraint(lessThanOrEqualTo anchor: NSLayoutXAxisAnchor, constant: CGFloat = 0.0, priority: UILayoutPriority) -> NSLayoutConstraint {
+        let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
+        constraint.priority = priority
+        return constraint
+    }
 }
 
 extension NSLayoutYAxisAnchor {
@@ -35,6 +47,18 @@ extension NSLayoutYAxisAnchor {
         constraint.priority = priority
         return constraint
     }
+    
+    public func constraint(greaterThanOrEqualTo anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0.0, priority: UILayoutPriority) -> NSLayoutConstraint {
+        let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
+        constraint.priority = priority
+        return constraint
+    }
+    
+    public func constraint(lessThanOrEqualTo anchor: NSLayoutYAxisAnchor, constant: CGFloat = 0.0, priority: UILayoutPriority) -> NSLayoutConstraint {
+        let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor, constant: constant)
+        constraint.priority = priority
+        return constraint
+    }
 }
 
 extension NSLayoutDimension {
@@ -47,6 +71,12 @@ extension NSLayoutDimension {
     
     public func constraint(equalTo anchor: NSLayoutDimension, priority: UILayoutPriority) -> NSLayoutConstraint {
         let constraint: NSLayoutConstraint = self.constraint(equalTo: anchor)
+        constraint.priority = priority
+        return constraint
+    }
+    
+    public func constraint(equalToConstant constant: CGFloat, priority: UILayoutPriority) -> NSLayoutConstraint {
+        let constraint: NSLayoutConstraint = self.constraint(equalToConstant: constant)
         constraint.priority = priority
         return constraint
     }
@@ -72,20 +102,12 @@ extension UIView {
         return result
     }
     
-    public func sendAction(_ action: Selector) {
-        UIApplication.shared.sendAction(
-            action,
-            to: .none,
-            from: self,
-            for: .none
-        )
-    }
-    
     public func addSubviews(_ subviews: [UIView]) {
         subviews.forEach(self.addSubview(_:))
     }
     
-    public func makeSideAnchorConstraints(relativeToMargins: Bool = false, padding: UIEdgeInsets? = .none, priorities: UIEdgeInsets? = .none) -> [NSLayoutConstraint] {
+    @discardableResult
+    public func makeSideAnchorConstraints(relativeToMargins: Bool = false, padding: UIEdgeInsets? = .none, priorities: UIEdgeInsets? = .none) -> (top: NSLayoutConstraint, left: NSLayoutConstraint, bottom: NSLayoutConstraint, right: NSLayoutConstraint) {
         guard let superview = self.superview else {
             fatalError("Must have a superview")
         }
@@ -128,20 +150,43 @@ extension UIView {
             bottomConstraint.priority = UILayoutPriority(Float(priorities.bottom))
         }
         
-        return [
-            leftConstraint,
-            bottomConstraint,
-            rightConstraint,
-            topConstraint
-        ]
+        return (
+            top: topConstraint,
+            left: leftConstraint,
+            bottom: bottomConstraint,
+            right: rightConstraint
+        )
     }
     
-    public func activateAllSideAnchors(relativeToMargins: Bool = false, padding: UIEdgeInsets? = .none, priorities: UIEdgeInsets? = .none) {
-        NSLayoutConstraint.activate(self.makeSideAnchorConstraints(relativeToMargins: relativeToMargins, padding: padding, priorities: priorities))
+    @discardableResult
+    public func activateAllSideAnchors(relativeToMargins: Bool = false, padding: UIEdgeInsets? = .none, priorities: UIEdgeInsets? = .none) -> (top: NSLayoutConstraint, left: NSLayoutConstraint, bottom: NSLayoutConstraint, right: NSLayoutConstraint) {
+        let result: (NSLayoutConstraint, NSLayoutConstraint, NSLayoutConstraint, NSLayoutConstraint) = self.makeSideAnchorConstraints(relativeToMargins: relativeToMargins, padding: padding, priorities: priorities)
+        NSLayoutConstraint.activate([result.0, result.1, result.2, result.3])
+        return result
     }
-
+    
     
     @discardableResult public func addSeparator(inset: CGFloat, yOrigin: CGFloat? = nil, height: CGFloat? = nil, color: UIColor? = nil) -> CALayer {
+        let separator: CALayer = CALayer()
+        
+        if let color: UIColor = color {
+            separator.backgroundColor = color.cgColor
+        } else {
+            separator.backgroundColor = UITableView().separatorColor?.cgColor
+        }
+        separator.frame = self.separatorFrame(
+            inset: inset,
+            yOrigin: yOrigin,
+            height: height
+        )
+        self.layer.addSublayer(separator)
+        
+        return separator
+    }
+    
+    public func separatorFrame(inset: CGFloat, yOrigin: CGFloat? = nil, height: CGFloat? = nil) -> CGRect {
+        var result: CGRect = CGRect.zero
+        
         let finalOrigin: CGPoint
         let finalSize: CGSize
         
@@ -158,17 +203,9 @@ extension UIView {
             finalOrigin = CGPoint(x: inset, y: self.bounds.height - UIView.separatorHeight)
             finalSize = CGSize(width: self.bounds.width - inset, height: UIView.separatorHeight)
         }
+        result = CGRect(origin: finalOrigin, size: finalSize)
         
-        let separator: CALayer = CALayer()
-        if let color: UIColor = color {
-            separator.backgroundColor = color.cgColor
-        } else {
-            separator.backgroundColor = UIColor.groupTableViewBackground.cgColor
-        }
-        
-        separator.frame = CGRect(origin: finalOrigin, size: finalSize)
-        self.layer.addSublayer(separator)
-        return separator
+        return result
     }
     
     /**
@@ -247,14 +284,14 @@ extension UICollectionView {
     public func registerReusableHeaderViewClasses<T>(_ classes: [T.Type]) where T: UICollectionReusableView {
         classes.forEach {
             let identifier: String = $0.reuseIdentifier
-            self.register($0.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: identifier)
+            self.register($0.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: identifier)
         }
     }
     
     public func registerReusableFooterViewClasses<T>(_ classes: [T.Type]) where T: UICollectionReusableView {
         classes.forEach {
             let identifier: String = $0.reuseIdentifier
-            self.register($0.self, forSupplementaryViewOfKind: UICollectionElementKindSectionFooter, withReuseIdentifier: identifier)
+            self.register($0.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: identifier)
         }
     }
     
@@ -341,7 +378,7 @@ extension UIColor {
 extension UITextField {
     
     public func setPlaceholder(_ text: String, color: UIColor) {
-        let attrs: [NSAttributedStringKey: Any] = [
+        let attrs: [NSAttributedString.Key: Any] = [
             .foregroundColor: color
         ]
         self.attributedPlaceholder = NSAttributedString(string: text, attributes: attrs)
@@ -356,34 +393,42 @@ extension UIViewController {
     }
     
     public func addChild(viewController: UIViewController, viewFrame: CGRect? = .none) {
-        viewController.willMove(toParentViewController: self)
-        self.addChildViewController(viewController)
+        viewController.willMove(toParent: self)
+        self.addChild(viewController)
         if let newFrame = viewFrame {
             viewController.view.frame = newFrame
         } else {
-            viewController.view.frame = self.view.bounds
+            viewController.view.frame = CGRect.zero
         }
         self.view.addSubview(viewController.view)
-        viewController.didMove(toParentViewController: self)
+        viewController.didMove(toParent: self)
     }
     
-    public func addChild(viewController: UIViewController, constraints: (UIView) -> [NSLayoutConstraint]) {
-        viewController.willMove(toParentViewController: self)
-        self.addChildViewController(viewController)
+    public func addChild(viewController: UIViewController, constraints: () -> [NSLayoutConstraint]) {
+        viewController.willMove(toParent: self)
+        self.addChild(viewController)
         self.view.addSubview(viewController.view)
         viewController.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate(constraints(viewController.view))
-        viewController.didMove(toParentViewController: self)
+        NSLayoutConstraint.activate(constraints())
+        viewController.didMove(toParent: self)
     }
     
     public func removeChild(viewController: UIViewController) {
-        viewController.willMove(toParentViewController: .none)
+        viewController.willMove(toParent: .none)
         viewController.view.removeFromSuperview()
-        viewController.removeFromParentViewController()
+        viewController.removeFromParent()
+    }
+    
+    public func removeAllChildren() {
+        for child in self.children {
+            child.willMove(toParent: .none)
+            child.view.removeFromSuperview()
+            child.removeFromParent()
+        }
     }
     
     public func childOfType<T: UIViewController>(_ viewControllerType: T.Type) -> T? {
-        let result = self.childViewControllers.filter({ child in
+        let result = self.children.filter({ child in
             switch child {
             case let navController as UINavigationController where viewControllerType is UINavigationController.Type == false:
                 return navController.viewControllers.filter({ $0 is T }).count > 0
@@ -431,8 +476,16 @@ extension UINavigationController {
 
 extension UIEdgeInsets {
     
-    static func withSpacing(_ spacing: CGFloat) -> UIEdgeInsets {
-        return self.init(top: spacing, left: spacing, bottom: spacing, right: spacing)
+    public static func withValue(_ value: CGFloat) -> UIEdgeInsets {
+        return self.init(top: value, left: value, bottom: value, right: value)
+    }
+    
+    public static func withPriority(_ priority: UILayoutPriority) -> UIEdgeInsets {
+        return self.withValue(CGFloat(priority.rawValue))
+    }
+    
+    public init(topPriority: UILayoutPriority, leftPriority: UILayoutPriority, bottomPriority: UILayoutPriority, rightPriority: UILayoutPriority) {
+        self.init(top: CGFloat(topPriority.rawValue), left: CGFloat(leftPriority.rawValue), bottom: CGFloat(bottomPriority.rawValue), right: CGFloat(rightPriority.rawValue))
     }
     
     public var size: CGSize {
@@ -440,6 +493,144 @@ extension UIEdgeInsets {
             width: self.left + self.right,
             height: self.top + self.bottom
         )
+    }
+}
+
+public final class SizeableNavigationBar: UINavigationBar {
+    
+    private let customHeight: CGFloat
+    private let contentOffset: CGFloat
+    
+    public init(customHeight: CGFloat, contentOffset: CGFloat) {
+        self.customHeight = customHeight
+        self.contentOffset = contentOffset
+        super.init(frame: .zero)
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    public override func sizeThatFits(_ size: CGSize) -> CGSize {
+        var result: CGSize = super.sizeThatFits(size)
+        result.height = self.customHeight
+        return result
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        for subview in self.subviews {
+            if NSStringFromClass(type(of: subview)).contains("BarBackground") {
+                var subviewFrame: CGRect = subview.frame
+                subviewFrame.origin.y = 0
+                subviewFrame.size.height = self.customHeight
+                subview.frame = subviewFrame
+            } else if NSStringFromClass(type(of: subview)).contains("BarContentView") {
+                var subviewFrame: CGRect = subview.frame
+                subviewFrame.origin.y = self.contentOffset
+                subviewFrame.size.height = self.customHeight - subviewFrame.origin.y
+                subview.frame = subviewFrame
+            }
+        }
+    }
+}
+
+extension UIColor {
+    
+    public convenience init?(hexString: String) {
+        var red: CGFloat   = 0.0
+        var green: CGFloat = 0.0
+        var blue: CGFloat  = 0.0
+        var alpha: CGFloat = 1.0
+        
+        let startIndex: String.Index = hexString.index(after: hexString.startIndex)
+        let trimmedString: String = String(hexString[startIndex..<hexString.endIndex])
+        let scanner = Scanner(string: trimmedString)
+        var hexValue: CUnsignedLongLong = 0
+        if scanner.scanHexInt64(&hexValue) {
+            switch (trimmedString.count) {
+            case 3:
+                red   = CGFloat((hexValue & 0xF00) >> 8)       / 15.0
+                green = CGFloat((hexValue & 0x0F0) >> 4)       / 15.0
+                blue  = CGFloat(hexValue & 0x00F)              / 15.0
+            case 4:
+                red   = CGFloat((hexValue & 0xF000) >> 12)     / 15.0
+                green = CGFloat((hexValue & 0x0F00) >> 8)      / 15.0
+                blue  = CGFloat((hexValue & 0x00F0) >> 4)      / 15.0
+                alpha = CGFloat(hexValue & 0x000F)             / 15.0
+            case 6:
+                red   = CGFloat((hexValue & 0xFF0000) >> 16)   / 255.0
+                green = CGFloat((hexValue & 0x00FF00) >> 8)    / 255.0
+                blue  = CGFloat(hexValue & 0x0000FF)           / 255.0
+            case 8:
+                red   = CGFloat((hexValue & 0xFF000000) >> 24) / 255.0
+                green = CGFloat((hexValue & 0x00FF0000) >> 16) / 255.0
+                blue  = CGFloat((hexValue & 0x0000FF00) >> 8)  / 255.0
+                alpha = CGFloat(hexValue & 0x000000FF)         / 255.0
+            default:
+                // Invalid RGB string, number of characters after '#' should be either 3, 4, 6 or 8
+                return nil
+            }
+        } else {
+            // "Scan hex error
+            return nil
+        }
+        
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
+    }
+}
+
+extension UILabel {
+    
+    public static func autolayoutLabel(with style: UIFont.TextStyle) -> UILabel {
+        let label: UILabel = UILabel.autolayoutView()
+        label.font = UIFont.preferredFont(forTextStyle: style)
+        if #available(iOS 10.0, *) {
+            label.adjustsFontForContentSizeCategory = true
+        }
+        return label
+    }
+    
+    public convenience init(textStyle: UIFont.TextStyle) {
+        self.init(frame: .zero)
+        self.font = UIFont.preferredFont(forTextStyle: textStyle)
+        if #available(iOS 10.0, *) {
+            self.adjustsFontForContentSizeCategory = true
+        }
+    }
+}
+
+extension UIViewController {
+    
+    public func showAlert(title: String, message: String) {
+        let alertController: UIAlertController = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        let action: UIAlertAction = UIAlertAction(
+            title: NSLocalizedString("OK", comment: ""),
+            style: .default) { [weak alertController] _ in
+                alertController?.dismiss(animated: true, completion: .none)
+        }
+        alertController.addAction(action)
+        self.present(
+            alertController,
+            animated: true,
+            completion: .none
+        )
+    }
+    
+    public func showAlert(title: String, error: NSError) {
+        self.showAlert(title: title, message: error.localizedDescription)
+    }
+}
+
+extension UIResponder {
+    
+    public func sendAction(_ selector: Selector) {
+        UIApplication.shared.sendAction(selector, to: .none, from: self, for: .none)
     }
 }
 
