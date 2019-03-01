@@ -320,21 +320,21 @@ extension UIColor {
     
     private static let denominator: CGFloat = 255.0
     
-    public static let defaultViewTintColor: UIColor = UIColor.red(0, green: 122, blue: 255)
+    public static let defaultViewTintColor: UIColor = UIColor(redValue: 0, greenValue: 122, blueValue: 255)
     
-    public class func red(_ red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat = 1.0) -> UIColor {
-        let redValue: CGFloat = red / self.denominator
-        let greenValue: CGFloat = green / self.denominator
-        let blueValue: CGFloat = blue / self.denominator
+    public convenience init(redValue: CGFloat, greenValue: CGFloat, blueValue: CGFloat, alpha: CGFloat = 1.0) {
+        let redValue: CGFloat = redValue / UIColor.denominator
+        let greenValue: CGFloat = greenValue / UIColor.denominator
+        let blueValue: CGFloat = blueValue / UIColor.denominator
         if #available(iOS 10.0, *) {
-            return self.init(displayP3Red: redValue, green: greenValue, blue: blueValue, alpha: alpha)
+            self.init(displayP3Red: redValue, green: greenValue, blue: blueValue, alpha: alpha)
         } else {
-            return self.init(red: redValue, green: greenValue, blue: blueValue, alpha: alpha)
+            self.init(red: redValue, green: greenValue, blue: blueValue, alpha: alpha)
         }
     }
     
-    public class func rgb(_ value: CGFloat, alpha: CGFloat = 1.0) -> UIColor {
-        return self.red(value, green: value, blue: value, alpha: alpha)
+    public convenience init(rgb: CGFloat, alpha: CGFloat = 1.0) {
+        self.init(red: rgb, green: rgb, blue: rgb, alpha: alpha)
     }
 }
 
