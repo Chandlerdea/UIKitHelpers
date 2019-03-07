@@ -474,25 +474,55 @@ extension UINavigationController {
     }
 }
 
-extension UIEdgeInsets {
+extension CGFloat {
     
-    public static func withValue(_ value: CGFloat) -> UIEdgeInsets {
-        return self.init(top: value, left: value, bottom: value, right: value)
+    public static var defaultSpacing: CGFloat {
+        return 8
     }
     
-    public static func withPriority(_ priority: UILayoutPriority) -> UIEdgeInsets {
-        return self.withValue(CGFloat(priority.rawValue))
+    public static var defaultMargin: CGFloat {
+        return 20
+    }
+    
+    public static var defaultTableViewCellHeight: CGFloat {
+        return 44
+    }
+    
+    public static var fullNavBarHeight: CGFloat {
+        return self.defaultTableViewCellHeight + UIApplication.shared.statusBarFrame.height
+    }
+    
+    public static var defaultTableViewSeparatorInset: CGFloat {
+        return 15
+    }
+}
+
+extension UIEdgeInsets {
+    
+    public static let defaultSpacing: UIEdgeInsets = UIEdgeInsets(value: .defaultSpacing)
+    public static let defaultMargin: UIEdgeInsets = UIEdgeInsets(value: .defaultMargin)
+    
+    public init(value: CGFloat) {
+        self.init(top: value, left: value, bottom: value, right: value)
     }
     
     public init(topPriority: UILayoutPriority, leftPriority: UILayoutPriority, bottomPriority: UILayoutPriority, rightPriority: UILayoutPriority) {
         self.init(top: CGFloat(topPriority.rawValue), left: CGFloat(leftPriority.rawValue), bottom: CGFloat(bottomPriority.rawValue), right: CGFloat(rightPriority.rawValue))
     }
     
+    public init(priority: UILayoutPriority) {
+        self.init(topPriority: priority, leftPriority: priority, bottomPriority: priority, rightPriority: priority)
+    }
+    
     public var size: CGSize {
-        return CGSize(
-            width: self.left + self.right,
-            height: self.top + self.bottom
-        )
+        return CGSize(width: self.left + self.right, height: self.top + self.bottom)
+    }
+}
+
+extension IndexPath {
+    
+    public static var zero: IndexPath {
+        return IndexPath(row: 0, section: 0)
     }
 }
 
