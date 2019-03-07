@@ -481,7 +481,7 @@ extension CGFloat {
     }
     
     public static var defaultMargin: CGFloat {
-        return 20
+        return 16
     }
     
     public static var defaultTableViewCellHeight: CGFloat {
