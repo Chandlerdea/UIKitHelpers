@@ -93,7 +93,7 @@ extension UIView {
         return result
     }
     
-    class public func loadFromNib<T: UIView>() -> T where T: ReusableViewType {
+    class public func loadFromNib<T: UIView>() -> T {
         let bundle: Bundle = Bundle(for: T.self)
         let nib: UINib? = UINib(nibName: T.reuseIdentifier, bundle: bundle)
         guard let result: T = nib?.instantiate(withOwner: .none, options: .none).first as? T else {
