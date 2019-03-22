@@ -448,6 +448,13 @@ extension UIViewController {
 
 extension UIStackView {
     
+    public func addSpacerView() -> UIView {
+        let spacer: UIView = UIView.autolayoutView()
+        spacer.setContentHuggingPriority(.defaultLow, for: self.axis)
+        self.addArrangedSubview(spacer)
+        return spacer
+    }
+    
     public func removeAllArrangedSubviews() {
         for view in self.arrangedSubviews {
             self.removeArrangedSubview(view)
