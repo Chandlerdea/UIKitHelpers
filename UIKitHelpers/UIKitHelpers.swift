@@ -479,6 +479,12 @@ extension UINavigationController {
         }
         return navigationController
     }
+    
+    public func viewController<T: UIViewController>(ofType type: T.Type) -> T? {
+        return self.viewControllers.first(where: { (viewController: UIViewController) -> Bool in
+            return viewController is T
+        }) as? T
+    }
 }
 
 extension CGFloat {
