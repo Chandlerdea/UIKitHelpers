@@ -101,6 +101,33 @@ extension UIView {
         }
         return result
     }
+
+    public class func show(for duration: TimeInterval,
+                           inAnimationDuration: TimeInterval = 0.25,
+                           outAnimationDuration: TimeInterval = 0.25,
+                           inDelay: TimeInterval = 0,
+                           outDelay: TimeInterval = 0,
+                           inOptions: UIView.AnimationOptions = .curveEaseInOut,
+                           outOptions: UIView.AnimationOptions = .curveEaseInOut,
+                           inAnimations: @escaping () -> Void,
+                           outAnimations: @escaping () -> Void) {
+
+        UIView.animate(
+            withDuration: inAnimationDuration,
+            delay: inDelay,
+            options: inOptions,
+            animations: inAnimations,
+            completion: { (isFinished: Bool) in
+                guard isFinished else { return }
+                UIView.animate(
+                    withDuration: outAnimationDuration,
+                    delay: outDelay,
+                    options: outOptions,
+                    animations: outAnimations
+                )
+            }
+        )
+    }
     
     public func addSubviews(_ subviews: [UIView]) {
         subviews.forEach(self.addSubview(_:))
