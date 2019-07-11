@@ -425,7 +425,11 @@ extension UIViewController {
         if let newFrame = viewFrame {
             viewController.view.frame = newFrame
         } else {
-            viewController.view.frame = CGRect.zero
+            viewController.view.frame = self.view.bounds
+            viewController.view.autoresizingMask = [
+                .flexibleWidth,
+                .flexibleHeight
+            ]
         }
         self.view.addSubview(viewController.view)
         viewController.didMove(toParent: self)
