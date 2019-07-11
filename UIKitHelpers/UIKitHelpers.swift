@@ -471,6 +471,14 @@ extension UIViewController {
             return result as? T
         }
     }
+
+    public func removeChild<T: UIViewController>(ofType type: T.Type) {
+        guard let child: T = self.childOfType(T.self) else { return }
+        child.willMove(toParent: .none)
+        child.view.removeFromSuperview()
+        child.removeFromParent()
+        child.didMove(toParent: .none)
+    }
 }
 
 extension UIStackView {
