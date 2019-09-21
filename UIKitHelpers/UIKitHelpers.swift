@@ -293,14 +293,14 @@ extension UILayoutPriority {
 
 extension UICollectionView {
     
-    public func registerCellClasses<T>(_ classes: [T.Type]) where T: UICollectionViewCell {
+    public func registerCellClasses(_ classes: [UICollectionViewCell.Type]) {
         classes.forEach {
             let identifier: String = $0.reuseIdentifier
             self.register($0.self, forCellWithReuseIdentifier: identifier)
         }
     }
     
-    public func registerCellNibs<T>(_ classes: [T.Type]) where T: UICollectionViewCell {
+    public func registerCellNibs(_ classes: [UICollectionViewCell.Type]) {
         classes.forEach {
             let name: String = $0.reuseIdentifier
             let nib: UINib = UINib(nibName: name, bundle: Bundle(for: $0))
@@ -338,14 +338,14 @@ extension UICollectionView {
 
 extension UITableView {
     
-    public func registerCellClasses<T: UITableViewCell>(_ classes: [T.Type]) {
+    public func registerCellClasses(_ classes: [UITableViewCell.Type]) {
         classes.forEach {
             let identifier = $0.reuseIdentifier
             self.register($0.self, forCellReuseIdentifier: identifier)
         }
     }
     
-    public func registerCellNibs<T: UITableViewCell>(_ classes: [T.Type]) {
+    public func registerCellNibs(_ classes: [UITableViewCell.Type]) {
         classes.forEach {
             let name = $0.reuseIdentifier
             let nib = UINib(nibName: name, bundle: Bundle(for: $0))
