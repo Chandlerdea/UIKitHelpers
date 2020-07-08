@@ -539,7 +539,8 @@ extension CGFloat {
     public static var defaultTableViewCellHeight: CGFloat {
         return 44
     }
-    
+
+    @available(iOS 12.0, *)
     public static var fullNavBarHeight: CGFloat {
         return self.defaultTableViewCellHeight + UIApplication.shared.statusBarFrame.height
     }
